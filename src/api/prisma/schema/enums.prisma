@@ -1,0 +1,124 @@
+enum Locale {
+  EN
+  UK
+  FR
+}
+
+enum Currency {
+  LBP
+  USD
+}
+
+enum RxCategory {
+  OTC
+  RX
+  UNKNOWN
+}
+
+enum ReservationStatus {
+  DRAFT
+  SUBMITTED
+  CONFIRMED
+  REJECTED
+  CANCELLED
+  EXPIRED
+  FULFILLED
+}
+
+enum PaymentProvider {
+  WHISH
+  OMT
+}
+
+enum PaymentStatus {
+  INITIATED
+  AWAITING_PAYMENT
+  USER_REPORTED_PAID
+  CONFIRMED
+  REJECTED
+  EXPIRED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentProofType {
+  SCREENSHOT
+  RECEIPT_NUMBER
+  NOTE
+}
+
+enum ActorType {
+  USER
+  PARTNER
+  MODERATOR
+  ADMIN
+  SYSTEM
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum PharmacyAccessLevel {
+  OWNER
+  MANAGER
+  OPERATOR
+}
+
+enum DraftStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ModerationAction {
+  CREATE
+  UPDATE
+  APPROVE
+  REJECT
+}
+
+enum BlacklistTargetType {
+  SKU
+  PRODUCT
+  BARCODE
+  GOV_NUMBER
+}
+
+enum BlacklistSeverity {
+  BLOCK
+  WARN
+}
+
+enum AddressChangeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum RoleCode {
+  USER
+  PARTNER_OWNER
+  MODERATOR
+  ADMIN
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+enum ReviewReportStatus {
+  OPEN
+  RESOLVED
+  REJECTED
+}
+
+enum ReviewReplyStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+}

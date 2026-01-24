@@ -1,0 +1,66 @@
+model Reservation {
+  id         String  @id @default(cuid())
+  userId     String?
+  pharmacyId String
+
+  status ReservationStatus @default(DRAFT)
+
+  customerName  String?
+  customerPhone String
+
+  reservationCode String?
+  submittedAt     DateTime?
+  confirmedAt     DateTime?
+  expiresAt       DateTime?
+
+  currency          Currency
+  totalBookingPrice Decimal?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Restrict)
+
+  items    ReservationItem[]
+  history  ReservationStatusEvent[]
+  payments ReservationPayment[]
+  review   PharmacyReview?
+
+  @@index([userId])
+  @@index([pharmacyId])
+  @@index([status])
+  @@index([customerPhone])
+}
+
+model ReservationItem {
+  id            String  @id @default(cuid())
+  reservationId String
+  skuId         String
+  offerId       String?
+
+  quantity Int     @default(1)
+  isSplit  Boolean @default(false)
+
+  unitBookingPrice Decimal?
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  sku         Sku         @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  offer       Offer?      @relation(fields: [offerId], references: [id], onDelete: SetNull)
+
+  @@index([reservationId])
+  @@index([skuId])
+}
+
+model ReservationStatusEvent {
+  id            String            @id @default(cuid())
+  reservationId String
+  status        ReservationStatus
+  note          String?
+  createdAt     DateTime          @default(now())
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+
+  @@index([reservationId, createdAt])
+  @@index([status])
+}

@@ -1,0 +1,54 @@
+model GovDrug {
+  id String @id @default(cuid())
+
+  officialNumber String @unique
+
+  name             String
+  form             String?
+  strength         String?
+  pack             String?
+  manufacturerName String?
+
+  sourceUrl         String?
+  sourceVersionDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prices   GovDrugPrice[]
+  skuLinks SkuGovLink[]
+
+  @@index([name])
+}
+
+model GovDrugPrice {
+  id        String @id @default(cuid())
+  govDrugId String
+
+  price       Decimal
+  currency    Currency
+  effectiveAt DateTime
+
+  sourceUrl   String?
+  decisionRef String?
+
+  govDrug GovDrug @relation(fields: [govDrugId], references: [id], onDelete: Cascade)
+
+  @@index([govDrugId, effectiveAt])
+}
+
+model SkuGovLink {
+  skuId     String
+  govDrugId String
+
+  matchType  String
+  confidence Decimal?
+
+  createdAt DateTime @default(now())
+
+  sku     Sku     @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  govDrug GovDrug @relation(fields: [govDrugId], references: [id], onDelete: Cascade)
+
+  @@id([skuId, govDrugId])
+  @@index([govDrugId])
+}

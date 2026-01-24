@@ -1,0 +1,132 @@
+model PharmacyReview {
+  id         String @id @default(cuid())
+  pharmacyId String
+  userId     String
+
+  // если хочешь “проверенный отзыв” — привязка к брони
+  reservationId String? @unique
+
+  rating Int // 1..5 (валидация в приложении)
+  title  String?
+  body   String?
+
+  status ReviewStatus @default(PENDING)
+
+  // агрегаты по лайкам “полезно” (для сортировки)
+  helpfulCount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pharmacy    Pharmacy     @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reservation Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+
+  photos       PharmacyReviewPhoto[]
+  reports      PharmacyReviewReport[]
+  reply        PharmacyReviewReply?
+  helpfulVotes PharmacyReviewHelpfulVote[]
+
+  // один пользователь — один отзыв на аптеку
+  @@unique([pharmacyId, userId])
+  @@index([pharmacyId, status])
+  @@index([pharmacyId, helpfulCount])
+  @@index([userId, createdAt])
+}
+
+model PharmacyReviewPhoto {
+  id        String   @id @default(cuid())
+  reviewId  String
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  review PharmacyReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId, sortOrder])
+}
+
+model PharmacyReviewReport {
+  id       String @id @default(cuid())
+  reviewId String
+
+  pharmacyId String
+
+  reporterUserId String?
+
+  reason String
+  note   String?
+  status ReviewReportStatus @default(OPEN)
+
+  resolvedByUserId String?
+  resolvedAt       DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  review   PharmacyReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  pharmacy Pharmacy       @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  reporter   User?                         @relation("ReviewReporter", fields: [reporterUserId], references: [id], onDelete: SetNull)
+  resolvedBy User?                         @relation("ReviewResolver", fields: [resolvedByUserId], references: [id], onDelete: SetNull)
+  response   PharmacyReviewReportResponse?
+
+  @@index([pharmacyId, status])
+  @@index([reviewId, status])
+  @@index([status, createdAt])
+}
+
+model PharmacyReviewReply {
+  id       String @id @default(cuid())
+  reviewId String @unique
+
+  // ВАЖНО: аптеку сохраняем явно, чтобы делать row-level фильтры
+  pharmacyId String
+
+  // кто ответил со стороны аптеки
+  partnerUserId String?
+
+  status ReviewReplyStatus @default(PUBLISHED)
+  body   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  review      PharmacyReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  pharmacy    Pharmacy       @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  partnerUser PartnerUser?   @relation(fields: [partnerUserId], references: [id], onDelete: SetNull)
+
+  @@index([pharmacyId, status])
+  @@index([partnerUserId])
+}
+
+model PharmacyReviewHelpfulVote {
+  reviewId  String
+  userId    String
+  createdAt DateTime @default(now())
+
+  review PharmacyReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([reviewId, userId])
+  @@index([userId, createdAt])
+}
+
+model PharmacyReviewReportResponse {
+  id         String @id @default(cuid())
+  reportId   String @unique
+  pharmacyId String
+
+  partnerUserId String?
+  body          String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  report      PharmacyReviewReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  pharmacy    Pharmacy             @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  partnerUser PartnerUser?         @relation(fields: [partnerUserId], references: [id], onDelete: SetNull)
+
+  @@index([pharmacyId])
+  @@index([partnerUserId])
+}

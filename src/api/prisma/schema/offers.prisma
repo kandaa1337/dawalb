@@ -1,0 +1,47 @@
+model Offer {
+  id         String @id @default(cuid())
+  skuId      String
+  pharmacyId String
+
+  bookingPrice Decimal
+  walkInPrice  Decimal?
+  currency     Currency
+
+  inStock  Boolean @default(true)
+  stockQty Int?
+  minQty   Int?
+
+  canSplitPack      Boolean @default(false)
+  splitUnitName     String?
+  splitQtyAvailable Int?
+
+  updatedAt DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  sku      Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  snapshots        OfferSnapshot[]
+  cartItems        CartItem[]
+  reservationItems ReservationItem[]
+
+  @@unique([skuId, pharmacyId])
+  @@index([pharmacyId])
+  @@index([skuId])
+  @@index([updatedAt])
+}
+
+model OfferSnapshot {
+  id         String   @id @default(cuid())
+  offerId    String
+  capturedAt DateTime @default(now())
+
+  bookingPrice Decimal
+  walkInPrice  Decimal?
+  inStock      Boolean
+  stockQty     Int?
+
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@index([offerId, capturedAt])
+}

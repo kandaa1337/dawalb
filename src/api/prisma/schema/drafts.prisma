@@ -1,0 +1,37 @@
+model DrugDraft {
+  id                     String @id @default(cuid())
+  createdByPartnerUserId String
+
+  proposedName     String
+  form             String?
+  dosage           String?
+  pack             String?
+  manufacturerName String?
+  barcode          String?
+
+  status        DraftStatus @default(PENDING)
+  moderatorNote String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdBy PartnerUser       @relation(fields: [createdByPartnerUserId], references: [id], onDelete: Cascade)
+  events    ModerationEvent[]
+
+  @@index([status])
+  @@index([createdByPartnerUserId])
+}
+
+model ModerationEvent {
+  id          String           @id @default(cuid())
+  draftId     String
+  action      ModerationAction
+  actorUserId String?
+  note        String?
+  createdAt   DateTime         @default(now())
+
+  draft DrugDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  actor User?     @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([draftId, createdAt])
+}

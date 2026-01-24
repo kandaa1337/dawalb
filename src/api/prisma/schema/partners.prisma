@@ -1,0 +1,47 @@
+model PartnerOrg {
+  id        String   @id @default(cuid())
+  chainId   String?
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chain PharmacyChain? @relation(fields: [chainId], references: [id], onDelete: SetNull)
+  users PartnerUser[]
+
+  @@index([chainId])
+}
+
+model PartnerUser {
+  id     String @id @default(cuid())
+  orgId  String
+  userId String @unique
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  org  PartnerOrg @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  pharmacyAccess PartnerUserPharmacyAccess[]
+  drafts         DrugDraft[]
+
+  reviewReplies         PharmacyReviewReply[]
+  reviewReportResponses PharmacyReviewReportResponse[]
+
+  @@index([orgId])
+}
+
+model PartnerUserPharmacyAccess {
+  partnerUserId String
+  pharmacyId    String
+  accessLevel   PharmacyAccessLevel
+
+  createdAt DateTime @default(now())
+
+  partnerUser PartnerUser @relation(fields: [partnerUserId], references: [id], onDelete: Cascade)
+  pharmacy    Pharmacy    @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@id([partnerUserId, pharmacyId])
+  @@index([pharmacyId])
+}

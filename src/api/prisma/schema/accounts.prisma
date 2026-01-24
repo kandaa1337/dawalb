@@ -1,0 +1,73 @@
+model User {
+  id        String  @id @default(cuid())
+  email     String? @unique
+  phone     String? @unique
+  name      String?
+  locale    Locale  @default(EN)
+  isBlocked Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts AuthAccount[]
+  sessions AuthSession[]
+
+  roles   UserRole[]
+  partner PartnerUser?
+
+  carts        Cart[]
+  reservations Reservation[]
+
+  paymentProofs PaymentProof[]
+  paymentEvents ReservationPaymentEvent[]
+
+  paymentsCreated   ReservationPayment[] @relation("PaymentCreatedBy")
+  paymentsConfirmed ReservationPayment[] @relation("PaymentConfirmedBy")
+
+  auditLogs          AuditLog[]
+  moderationEvents   ModerationEvent[]
+  blacklistedCreated BlacklistedDrug[]    @relation("BlacklistedCreatedBy")
+  blacklistChanges   BlacklistedDrugLog[]
+
+  addressChangeRequestsCreated  AddressChangeRequest[] @relation("AddressChangeCreatedBy")
+  addressChangeRequestsReviewed AddressChangeRequest[] @relation("AddressChangeReviewedBy")
+
+  pharmacyVerificationsChecked PharmacyVerification[] @relation("PharmacyVerificationCheckedBy")
+  pharmacyReviews              PharmacyReview[]
+
+  reviewReportsMade     PharmacyReviewReport[]      @relation("ReviewReporter")
+  reviewReportsResolved PharmacyReviewReport[]      @relation("ReviewResolver")
+  reviewHelpfulVotes    PharmacyReviewHelpfulVote[]
+}
+
+model AuthAccount {
+  id                String    @id @default(cuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  accessToken       String?
+  refreshToken      String?
+  expiresAt         DateTime?
+  idToken           String?
+  scope             String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model AuthSession {
+  id           String   @id @default(cuid())
+  userId       String
+  sessionToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}

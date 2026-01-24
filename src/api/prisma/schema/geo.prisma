@@ -1,0 +1,77 @@
+model Country {
+  id   String  @id @default(cuid())
+  iso2 String? @unique
+  name String
+
+  manufacturers Manufacturer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  regions   Region[]
+  cities    City[]
+  addresses Address[]
+}
+
+model Region {
+  id        String   @id @default(cuid())
+  countryId String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  country Country @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  cities  City[]
+
+  addresses Address[]
+
+  @@unique([countryId, name])
+  @@index([countryId])
+}
+
+model City {
+  id        String   @id @default(cuid())
+  countryId String
+  regionId  String
+  name      String
+  slug      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  country Country @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  region  Region  @relation(fields: [regionId], references: [id], onDelete: Restrict)
+
+  addresses Address[]
+
+  @@unique([regionId, name])
+  @@index([countryId])
+  @@index([regionId])
+}
+
+model Address {
+  id         String  @id @default(cuid())
+  countryId  String?
+  regionId   String?
+  cityId     String?
+  street     String?
+  building   String?
+  apartment  String?
+  postalCode String?
+  raw        String?
+
+  lat Decimal?
+  lng Decimal?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  country Country? @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  region  Region?  @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  city    City?    @relation(fields: [cityId], references: [id], onDelete: SetNull)
+
+  pharmacies    Pharmacy[]
+  manufacturers Manufacturer[]
+
+  @@index([cityId])
+  @@index([lat, lng])
+}

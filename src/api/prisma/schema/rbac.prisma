@@ -1,0 +1,39 @@
+model Role {
+  id   String   @id @default(cuid())
+  code RoleCode @unique
+  name String
+
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model UserRole {
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@index([roleId])
+}
+
+model Permission {
+  id   String @id @default(cuid())
+  code String @unique // e.g. PHARMACY_EDIT, DRUG_APPROVE, BLACKLIST_MANAGE
+  name String
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+}

@@ -1,0 +1,104 @@
+{
+  "en": {
+    "common": {
+      "search": "Search",
+      "searchPlaceholder": "Search...",
+      "catalog": "Catalog",
+      "services": "Services",
+      "availability": "Availability",
+      "contact": "Contact",
+      "cart": "Cart",
+      "admin": "Admin",
+      "city": "Kyiv",
+      "language": "Language"
+    },
+    "home": {
+    "heroTitle": "Reserve items in pharmacies, save up to 30%",
+    "hintPrefix": "For example:",
+    "actualCategories": "Popular categories",
+    "steps": {
+        "1": { "title": "Find a product", "text": "Search for products in search or browse the catalog." },
+        "2": { "title": "Choose a pharmacy", "text": "Pick a pharmacy from the list and reserve the item." },
+        "3": { "title": "Reserve", "text": "Add contact details and confirm the reservation." },
+        "4": { "title": "Pick up the order", "text": "Get a reservation code and pick up at the pharmacy." }
+    },
+    "categories": {
+        "medicine": "Medicines & prevention",
+        "vitamins": "Vitamins & minerals",
+        "beauty": "Beauty & care",
+        "sport": "Sport & health",
+        "kids": "Kids & moms",
+        "medDevices": "Medical devices",
+        "ortho": "Orthopedics & rehab"
+    }
+    }
+  },
+  "fr": {
+    "common": {
+      "search": "Rechercher",
+      "searchPlaceholder": "Rechercher…",
+      "catalog": "Catalogue",
+      "services": "Services",
+      "availability": "Disponibilité",
+      "contact": "Contact",
+      "cart": "Panier",
+      "admin": "Admin",
+      "city": "Kyiv",
+      "language": "Langue"
+    },
+    "home": {
+    "heroTitle": "Réservez en pharmacie et économisez jusqu’à 30 %",
+    "hintPrefix": "Par exemple :",
+    "actualCategories": "Catégories populaires",
+    "steps": {
+        "1": { "title": "Trouvez un produit", "text": "Recherchez des produits ou parcourez le catalogue." },
+        "2": { "title": "Choisissez une pharmacie", "text": "Sélectionnez une pharmacie et réservez l’article." },
+        "3": { "title": "Réservez", "text": "Ajoutez vos coordonnées et confirmez la réservation." },
+        "4": { "title": "Retirez la commande", "text": "Recevez un code et retirez en pharmacie." }
+    },
+    "categories": {
+        "medicine": "Médicaments & prévention",
+        "vitamins": "Vitamines & minéraux",
+        "beauty": "Beauté & soin",
+        "sport": "Sport & santé",
+        "kids": "Enfants & mamans",
+        "medDevices": "Dispositifs médicaux",
+        "ortho": "Orthopédie & rééducation"
+    }
+    }
+  },
+  "ar": {
+    "common": {
+      "search": "بحث",
+      "searchPlaceholder": "ابحث...",
+      "catalog": "الكتالوج",
+      "services": "الخدمات",
+      "availability": "التوفر",
+      "contact": "اتصال",
+      "cart": "السلة",
+      "admin": "لوحة الإدارة",
+      "city": "كييف",
+      "language": "اللغة"
+    },
+    "home": {
+    "heroTitle": "احجز المنتجات من الصيدليات ووفر حتى 30٪",
+    "hintPrefix": "مثال:",
+    "actualCategories": "فئات شائعة",
+    "steps": {
+        "1": { "title": "ابحث عن المنتج", "text": "ابحث عن المنتجات أو تصفح الكتالوج." },
+        "2": { "title": "اختر الصيدلية", "text": "اختر صيدلية من القائمة واحجز المنتج." },
+        "3": { "title": "أكمل الحجز", "text": "أدخل بيانات التواصل ثم أكد الحجز." },
+        "4": { "title": "استلم الطلب", "text": "احصل على رمز الحجز واستلم من الصيدلية." }
+    },
+    "categories": {
+        "medicine": "الأدوية والوقاية",
+        "vitamins": "الفيتامينات والمعادن",
+        "beauty": "الجمال والعناية",
+        "sport": "الرياضة والصحة",
+        "kids": "الأطفال والأمهات",
+        "medDevices": "المستلزمات الطبية",
+        "ortho": "العظام والتأهيل"
+    }
+    }
+  }
+}

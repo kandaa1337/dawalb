@@ -1,0 +1,29 @@
+model ProductInstruction {
+  id        String  @id @default(cuid())
+  skuId     String
+  locale    Locale
+  sourceUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sku      Sku                  @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  sections InstructionSection[]
+
+  @@unique([skuId, locale])
+  @@index([locale])
+}
+
+model InstructionSection {
+  id            String @id @default(cuid())
+  instructionId String
+  key           String
+  title         String
+  content       String
+  sortOrder     Int    @default(0)
+
+  instruction ProductInstruction @relation(fields: [instructionId], references: [id], onDelete: Cascade)
+
+  @@unique([instructionId, key])
+  @@index([instructionId, sortOrder])
+}

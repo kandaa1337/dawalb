@@ -10,6 +10,9 @@
 
 # production
 /build
+src/api/prisma/dev.db
+src/api/prisma/migrations/dev.db*
+src/api/node_modules
 
 # misc
 .DS_Store

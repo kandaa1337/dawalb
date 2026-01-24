@@ -1,0 +1,63 @@
+.footer {
+  width: 100%;
+  padding: 28px 20px;  /* вместо 40px со всех сторон */
+  background: #f2f2f2;
+  color: #101010;
+  text-align: center;
+}
+
+/* icons row */
+.footer-icons {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* если используешь <i> (fontawesome/иконки) */
+.footer-icons i {
+  font-size: 20px;
+  cursor: pointer;
+
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.10);
+  transition: transform 120ms ease, background 160ms ease, opacity 160ms ease;
+}
+
+.footer-icons i:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+  opacity: 1;
+}
+
+.footer-icons i:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* доступность (если <i> кликабельные) */
+.footer-icons i:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.55);
+  outline-offset: 2px;
+}
+
+/* чуть компактнее на маленьких экранах */
+@media (max-width: 480px) {
+  .footer {
+    padding: 22px 16px;
+  }
+
+  .footer-icons i {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+}

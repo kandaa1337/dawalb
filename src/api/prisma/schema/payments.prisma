@@ -1,0 +1,68 @@
+model ReservationPayment {
+  id            String @id @default(cuid())
+  reservationId String
+
+  userId            String?
+  confirmedByUserId String?
+
+  provider PaymentProvider
+  amount   Decimal
+  currency Currency
+
+  status PaymentStatus @default(INITIATED)
+
+  paymentUrl  String
+  providerRef String?
+  expiresAt   DateTime?
+
+  userReportedPaidAt DateTime?
+  confirmedAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  user        User?       @relation("PaymentCreatedBy", fields: [userId], references: [id], onDelete: SetNull)
+  confirmedBy User?       @relation("PaymentConfirmedBy", fields: [confirmedByUserId], references: [id], onDelete: SetNull)
+
+  proofs PaymentProof[]
+  events ReservationPaymentEvent[]
+
+  @@index([reservationId])
+  @@index([status])
+  @@index([provider, providerRef])
+}
+
+model PaymentProof {
+  id        String           @id @default(cuid())
+  paymentId String
+  type      PaymentProofType
+  value     String
+
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+
+  payment   ReservationPayment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  createdBy User?              @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@index([paymentId])
+}
+
+model ReservationPaymentEvent {
+  id        String @id @default(cuid())
+  paymentId String
+
+  fromStatus PaymentStatus?
+  toStatus   PaymentStatus
+
+  actorType   ActorType
+  actorUserId String?
+  note        String?
+
+  createdAt DateTime @default(now())
+
+  payment ReservationPayment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  actor   User?              @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([paymentId, createdAt])
+}

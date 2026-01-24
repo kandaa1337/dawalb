@@ -1,0 +1,37 @@
+model PaymentMethod {
+  code     PaymentProvider @id
+  name     String
+  isActive Boolean         @default(true)
+
+  pharmacyConfigs PharmacyPaymentMethod[]
+}
+
+model PharmacyPaymentMethod {
+  id         String          @id @default(cuid())
+  pharmacyId String
+  methodCode PaymentProvider
+  currency   Currency        @default(LBP)
+
+  isEnabled Boolean  @default(false)
+  minAmount Decimal?
+  maxAmount Decimal?
+
+  paymentLinkTemplate String?
+
+  instructions String?
+
+  requiresProof Boolean @default(true)
+
+  payToIdentifier String?
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pharmacy Pharmacy      @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  method   PaymentMethod @relation(fields: [methodCode], references: [code], onDelete: Restrict)
+
+  @@unique([pharmacyId, methodCode, currency])
+  @@index([pharmacyId, isEnabled])
+}

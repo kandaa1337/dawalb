@@ -1,0 +1,45 @@
+model BlacklistedDrug {
+  id         String              @id @default(cuid())
+  targetType BlacklistTargetType
+  severity   BlacklistSeverity   @default(BLOCK)
+
+  skuId     String?
+  productId String?
+  barcode   String?
+  govNumber String?
+
+  reason   String
+  startsAt DateTime  @default(now())
+  endsAt   DateTime?
+
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  sku       Sku?     @relation("BlacklistedSku", fields: [skuId], references: [id], onDelete: SetNull)
+  product   Product? @relation("BlacklistedProduct", fields: [productId], references: [id], onDelete: SetNull)
+  createdBy User?    @relation("BlacklistedCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  logs BlacklistedDrugLog[]
+
+  @@index([targetType])
+  @@index([severity])
+  @@index([startsAt])
+  @@index([skuId])
+  @@index([productId])
+  @@index([barcode])
+  @@index([govNumber])
+}
+
+model BlacklistedDrugLog {
+  id            String   @id @default(cuid())
+  blacklistedId String
+  actorUserId   String?
+  note          String?
+  createdAt     DateTime @default(now())
+
+  blacklisted BlacklistedDrug @relation(fields: [blacklistedId], references: [id], onDelete: Cascade)
+  actor       User?           @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([blacklistedId, createdAt])
+}

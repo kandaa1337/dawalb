@@ -1,0 +1,21 @@
+model AuditLog {
+  id String @id @default(cuid())
+
+  actorUserId String?
+  actorType   ActorType
+
+  entityType String
+  entityId   String
+  action     String // CREATE/UPDATE/DELETE/STATUS_CHANGE etc.
+
+  beforeJson String?
+  afterJson  String?
+  note       String?
+
+  createdAt DateTime @default(now())
+
+  actor User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([actorUserId, createdAt])
+}

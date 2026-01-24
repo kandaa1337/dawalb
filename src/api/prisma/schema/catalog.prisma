@@ -1,0 +1,161 @@
+model Category {
+  id        String  @id @default(cuid())
+  parentId  String?
+  slug      String  @unique
+  isActive  Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryTree")
+
+  translations CategoryTranslation[]
+  skus         SkuCategory[]
+}
+
+model CategoryTranslation {
+  id             String  @id @default(cuid())
+  categoryId     String
+  locale         Locale
+  name           String
+  description    String?
+  seoTitle       String?
+  seoDescription String?
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@index([locale])
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  translations     ProductTranslation[]
+  blacklistEntries BlacklistedDrug[]    @relation("BlacklistedProduct")
+
+  skus Sku[]
+}
+
+model ProductTranslation {
+  id               String  @id @default(cuid())
+  productId        String
+  locale           Locale
+  name             String
+  shortDescription String?
+  seoTitle         String?
+  seoDescription   String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, locale])
+  @@index([locale])
+}
+
+model Manufacturer {
+  id        String  @id @default(cuid())
+  name      String
+  legalName String?
+  addressId String?
+  countryId String?
+  website   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  address Address? @relation(fields: [addressId], references: [id], onDelete: SetNull)
+  country Country? @relation(fields: [countryId], references: [id], onDelete: SetNull)
+
+  skus Sku[]
+
+  @@unique([name])
+  @@index([countryId])
+}
+
+model Sku {
+  id        String @id @default(cuid())
+  productId String
+  slug      String @unique
+
+  rxCategory  RxCategory @default(UNKNOWN)
+  releaseForm String?
+  dosageText  String?
+  packSize    Int?
+  packUnit    String?
+
+  manufacturerId String?
+
+  blacklistEntries BlacklistedDrug[] @relation("BlacklistedSku")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product      Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  manufacturer Manufacturer? @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
+
+  categories SkuCategory[]
+  images     SkuImage[]
+  barcodes   SkuBarcode[]
+
+  registration ProductRegistration?
+  instructions ProductInstruction[]
+
+  offers           Offer[]
+  reservationItems ReservationItem[]
+
+  govLinks SkuGovLink[]
+
+  @@index([productId])
+  @@index([manufacturerId])
+}
+
+model SkuCategory {
+  skuId      String
+  categoryId String
+
+  sku      Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([skuId, categoryId])
+  @@index([categoryId])
+}
+
+model SkuImage {
+  id        String @id @default(cuid())
+  skuId     String
+  url       String
+  sortOrder Int    @default(0)
+
+  sku Sku @relation(fields: [skuId], references: [id], onDelete: Cascade)
+
+  @@index([skuId, sortOrder])
+}
+
+model SkuBarcode {
+  id    String @id @default(cuid())
+  skuId String
+  code  String
+
+  sku Sku @relation(fields: [skuId], references: [id], onDelete: Cascade)
+
+  @@unique([skuId, code])
+  @@index([code])
+}
+
+model ProductRegistration {
+  id        String    @id @default(cuid())
+  skuId     String    @unique
+  regNumber String
+  issuedAt  DateTime?
+  orderNo   String?
+  orderAt   DateTime?
+
+  sku Sku @relation(fields: [skuId], references: [id], onDelete: Cascade)
+
+  @@index([regNumber])
+}

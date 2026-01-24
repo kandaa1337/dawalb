@@ -1,0 +1,30 @@
+model Cart {
+  id         String  @id @default(cuid())
+  userId     String?
+  sessionKey String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items CartItem[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id       String  @id @default(cuid())
+  cartId   String
+  offerId  String
+  quantity Int     @default(1)
+  isSplit  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart  Cart  @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Restrict)
+
+  @@unique([cartId, offerId, isSplit])
+  @@index([offerId])
+}
