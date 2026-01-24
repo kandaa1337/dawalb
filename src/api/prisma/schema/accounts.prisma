@@ -10,7 +10,9 @@ model User {
   updatedAt DateTime @updatedAt
 
   accounts AuthAccount[]
-  sessions AuthSession[]
+  sessions AuthSession[] 
+  
+  credential UserCredential?
 
   roles   UserRole[]
   partner PartnerUser?
@@ -63,6 +65,8 @@ model AuthAccount {
 model AuthSession {
   id           String   @id @default(cuid())
   userId       String
+  ip           String
+  userAgent    String
   sessionToken String   @unique
   expiresAt    DateTime
   createdAt    DateTime @default(now())
@@ -71,3 +75,12 @@ model AuthSession {
 
   @@index([userId])
 }
+
+model UserCredential {
+  userId String @id
+  passwordHash String
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+

@@ -1,11 +1,19 @@
-const express = require('express');
+import "dotenv/config";
+import express from "express";
+import cookieParser from "cookie-parser";
+import { authRouter } from "./routes/auth.js";
+
 const app = express();
-const port = 3001;
+app.use(express.json());
+app.use(cookieParser());
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get("/api/health", (req, res) => res.json({ ok: true }));
+
+app.use("/api/auth", authRouter);
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(err.status || 500).json({ ok: false, error: err.message || "INTERNAL_ERROR" });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
-});
+app.listen(process.env.PORT || 4000, () => console.log("API up"));
