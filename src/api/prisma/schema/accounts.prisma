@@ -26,6 +26,9 @@ model User {
   paymentsCreated   ReservationPayment[] @relation("PaymentCreatedBy")
   paymentsConfirmed ReservationPayment[] @relation("PaymentConfirmedBy")
 
+  partnerApplication PartnerApplication?
+  partnerAppsDecided PartnerApplication[] @relation("PartnerAppDecidedBy")
+
   auditLogs          AuditLog[]
   moderationEvents   ModerationEvent[]
   blacklistedCreated BlacklistedDrug[]    @relation("BlacklistedCreatedBy")

@@ -14,6 +14,7 @@ export default function Header() {
   const inputRef = useRef(null);
 
   const examples = useMemo(() => ["Парацетамол", "Ибупрофен", "Витамин C"], []);
+  const selected = JSON.parse(localStorage.getItem("selectedPharmacy") || "null");
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -78,17 +79,23 @@ export default function Header() {
               <button className="toplinks__btn" type="button" onClick={() => navigate("/catalog")}>
                 {t("common.catalog")}
               </button>
+
+              <button className="toplinks__btn" type="button" onClick={() => navigate("/pharmacies")}>
+                {t("common.pharmacies")}
+              </button>
+
               <button className="toplinks__btn" type="button" onClick={() => navigate("/services")}>
                 {t("common.services")}
               </button>
+
               <button className="toplinks__btn" type="button" onClick={() => navigate("/contact")}>
                 {t("common.contact")}
               </button>
             </div>
 
             <div className="topright">
-              <button className="pill" type="button" onClick={() => navigate("/city")}>
-                {t("common.city")} ▾
+              <button className="pill" type="button" onClick={() => navigate("/pharmacies")}>
+                {selected?.name || t("common.choosePharmacy")} ▾
               </button>
 
               <button className="pill pill--white" type="button" onClick={() => navigate("/availability")}>
@@ -109,9 +116,9 @@ export default function Header() {
               <button
                 className="icon"
                 type="button"
-                onClick={() => navigate("/admin")}
-                aria-label={t("common.admin")}
-                title={t("common.admin")}
+                onClick={() => navigate("/profile")}
+                aria-label={t("common.profile")}
+                title={t("common.profile")}
               >
                 <FaUserLock />
               </button>

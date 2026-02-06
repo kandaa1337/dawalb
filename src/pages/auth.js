@@ -1,65 +1,92 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { useAuth } from "../AuthContext";
+import { useLocation, useNavigate } from "react-router-dom";
 
-async function api(path, { method = "GET", body } = {}) {
-  const res = await fetch(path, {
-    method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
-    body: body ? JSON.stringify(body) : undefined,
-    credentials: "include",
-  });
+export default function Auth() {
+  const { login, register } = useAuth();
+  const nav = useNavigate();
+  const loc = useLocation();
 
-  const text = await res.text();
-  let data;
-  try { data = JSON.parse(text); } catch { data = { raw: text }; }
+  const [mode, setMode] = useState("login");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
 
-  return { ok: res.ok, status: res.status, data };
-}
+  const to = loc.state?.from || "/";
 
-export default function AuthTest() {
-  const [email, setEmail] = useState("test@test.com");
-  const [password, setPassword] = useState("123456");
-  const [name, setName] = useState("Test User");
-  const [out, setOut] = useState(null);
+  async function onSubmit(e) {
+    e.preventDefault();
+    setErr("");
+    try {
+      if (mode === "login") {
+        await login({ email: email || undefined, phone: phone || undefined, password });
+      } else {
+        await register({
+          email: email || undefined,
+          phone: phone || undefined,
+          password,
+          name: name || undefined,
+        });
+      }
+      nav(to, { replace: true });
+    } catch (e2) {
+      setErr(e2?.message || "Error");
+    }
+  }
 
   return (
-    <div style={{ padding: 20, maxWidth: 520 }}>
-      <h2>Auth test</h2>
+    <div style={{ maxWidth: 420, margin: "40px auto", padding: 16 }}>
+      <h2>{mode === "login" ? "Sign in" : "Sign up"}</h2>
 
-      <div style={{ display: "grid", gap: 8 }}>
-        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" />
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="name" />
-        <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" />
-      </div>
+      <form onSubmit={onSubmit} style={{ display: "grid", gap: 10 }}>
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email (or leave empty)"
+        />
+        <input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="Phone (or leave empty)"
+        />
 
-      <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+        {mode === "register" && (
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name (optional)"
+          />
+        )}
+
+        <input
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          type="password"
+        />
+
+        {err && <div style={{ color: "crimson" }}>{err}</div>}
+
+        <button type="submit">{mode === "login" ? "Sign in" : "Create account"}</button>
+
         <button
-          onClick={async () => setOut(await api("/api/auth/register", { method: "POST", body: { email, password, name } }))}
+          type="button"
+          onClick={() => {
+            setMode(mode === "login" ? "register" : "login");
+            setErr("");
+          }}
+          style={{
+            background: "transparent",
+            border: "none",
+            textDecoration: "underline",
+            cursor: "pointer",
+          }}
         >
-          Register
+          {mode === "login" ? "No account? Sign up" : "Already have an account? Sign in"}
         </button>
-
-        <button
-          onClick={async () => setOut(await api("/api/auth/login", { method: "POST", body: { email, password } }))}
-        >
-          Login
-        </button>
-
-        <button
-          onClick={async () => setOut(await api("/api/auth/me"))}
-        >
-          Me
-        </button>
-
-        <button
-          onClick={async () => setOut(await api("/api/auth/logout", { method: "POST" }))}
-        >
-          Logout
-        </button>
-      </div>
-
-      <pre style={{ marginTop: 16, background: "#111", color: "#0f0", padding: 12, borderRadius: 8 }}>
-        {out ? JSON.stringify(out, null, 2) : "No output yet"}
-      </pre>
+      </form>
     </div>
   );
 }

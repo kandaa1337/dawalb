@@ -45,3 +45,44 @@ model PartnerUserPharmacyAccess {
   @@id([partnerUserId, pharmacyId])
   @@index([pharmacyId])
 }
+
+enum PartnerApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+model PartnerApplication {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+
+  // что заполняет юзер
+  orgName   String
+  chainName String
+  legalName String?
+  website   String?
+  phone     String?
+
+  status    PartnerApplicationStatus @default(PENDING)
+
+  // решение админа
+  decidedAt        DateTime?
+  decidedByUserId  String?
+  rejectReason     String?
+
+  // что создали после approve (удобно хранить)
+  chainId      String?
+  orgId        String?
+  partnerUserId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  decidedBy User? @relation("PartnerAppDecidedBy", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdAt])
+}
+

@@ -1,28 +1,28 @@
 model AddressChangeRequest {
-  id         String @id @default(cuid())
+  id        String @id @default(cuid())
   pharmacyId String
 
-  status AddressChangeStatus @default(PENDING)
+  status    AddressChangeStatus @default(PENDING)
 
   // предлагаемое значение (можно хранить и как raw, и раздельно)
-  proposedRaw      String?
-  proposedStreet   String?
+  proposedRaw     String?
+  proposedStreet  String?
   proposedBuilding String?
-  proposedLat      Decimal?
-  proposedLng      Decimal?
+  proposedLat     Decimal?
+  proposedLng     Decimal?
 
   note String?
 
-  createdByUserId  String?
+  createdByUserId String?
   reviewedByUserId String?
-  reviewedAt       DateTime?
+  reviewedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  pharmacy   Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
-  createdBy  User?    @relation("AddressChangeCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
-  reviewedBy User?    @relation("AddressChangeReviewedBy", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+  
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  createdBy User?   @relation("AddressChangeCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  reviewedBy User?  @relation("AddressChangeReviewedBy", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
 
   @@index([pharmacyId])
   @@index([status])
