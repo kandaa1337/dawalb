@@ -29,7 +29,7 @@ export function I18nProvider({ children }) {
 
     const font = RTL_LANGS.has(lang)
         ? '"Cairo", system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif'
-        : '"Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif';
+        : '"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif';
 
     document.documentElement.style.setProperty("--app-font", font);
 

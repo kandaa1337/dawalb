@@ -15,11 +15,22 @@ model Offer {
   splitUnitName     String?
   splitQtyAvailable Int?
 
+  isFrozen       Boolean   @default(false)
+  frozenReason   String?
+  frozenAt       DateTime?
+  frozenByUserId String?
+  isDeleted      Boolean   @default(false)
+  deletedReason  String?
+  deletedAt      DateTime?
+  deletedByUserId String?
+
   updatedAt DateTime @default(now())
   createdAt DateTime @default(now())
 
-  sku      Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
-  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  sku         Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  pharmacy    Pharmacy  @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  frozenBy    User?     @relation("OfferFrozenBy", fields: [frozenByUserId], references: [id], onDelete: SetNull)
+  deletedBy   User?     @relation("OfferDeletedBy", fields: [deletedByUserId], references: [id], onDelete: SetNull)
 
   snapshots        OfferSnapshot[]
   cartItems        CartItem[]

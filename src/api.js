@@ -4,11 +4,12 @@ async function parse(res) {
 }
 
 export async function api(path, { method = "GET", body } = {}) {
+  const isFormData = body instanceof FormData;
   const res = await fetch(`/api${path}`, {
     method,
     credentials: "include",
-    headers: body ? { "Content-Type": "application/json" } : undefined,
-    body: body ? JSON.stringify(body) : undefined,
+    headers: isFormData ? undefined : (body ? { "Content-Type": "application/json" } : undefined),
+    body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
   });
 
   const data = await parse(res);

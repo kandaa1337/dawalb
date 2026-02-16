@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { api } from "../api";
+import "../styles/Pharmacies.css";
 
 export default function Pharmacies() {
+  const [searchParams] = useSearchParams();
   const [query, setQuery] = useState("");
   const [city, setCity] = useState("");
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+  const highlightId = (searchParams.get("highlight") || "").trim();
 
   const qs = useMemo(() => {
     const p = new URLSearchParams();
@@ -17,16 +21,12 @@ export default function Pharmacies() {
 
   const navigate = useNavigate();
 
-    function selectPharmacy(p) {
-    localStorage.setItem(
-        "selectedPharmacy",
-        JSON.stringify({ id: p.id, name: p.name })
-    );
+  const selectPharmacy = (p) => {
+    localStorage.setItem("selectedPharmacy", JSON.stringify({ id: p.id, name: p.name }));
     localStorage.setItem("selectedPharmacyId", p.id);
-
-    // куда вести дальше — на главную или на товары
-    navigate("/", { replace: true });
-    }
+    window.dispatchEvent(new Event("storage"));
+    navigate(`/pharmacy/${p.id}`);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -34,9 +34,8 @@ export default function Pharmacies() {
       setLoading(true);
       setErr("");
       try {
-        const res = await fetch(`/api/pharmacies?${qs}`, { credentials: "include" });
-        const data = await res.json();
-        if (!res.ok || !data.ok) throw new Error(data?.error || "Failed to load pharmacies");
+        const data = await api(`/pharmacies?${qs}`);
+        if (!data?.ok) throw new Error(data?.error || "Failed to load pharmacies");
         if (!cancelled) setItems(data.items || []);
       } catch (e) {
         if (!cancelled) setErr(e.message || "Error");
@@ -44,58 +43,67 @@ export default function Pharmacies() {
         if (!cancelled) setLoading(false);
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [qs]);
 
   return (
-    <div style={{ maxWidth: 900, margin: "30px auto", padding: 16 }}>
-      <h2>Choose a pharmacy</h2>
-
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name/address"
-          style={{ flex: "1 1 280px", padding: 10 }}
-        />
-        <input
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder="City"
-          style={{ flex: "1 1 180px", padding: 10 }}
-        />
+    <div className="pharmacies-page">
+      <div className="pharmacies-hero">
+        <h1 className="pharmacies-title">Choose Pharmacy</h1>
+        <p className="pharmacies-subtitle">Find the right pharmacy and open its products.</p>
+        <div className="pharmacies-search">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name, address, chain"
+          />
+          <input
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="City or region"
+          />
+        </div>
       </div>
 
-      {loading && <div>Loading…</div>}
-      {err && <div style={{ color: "crimson" }}>{err}</div>}
+      {loading && <div className="pharmacies-state">Loading...</div>}
+      {err && <div className="pharmacies-state pharmacies-state--error">{err}</div>}
 
-      <div style={{ display: "grid", gap: 10 }}>
-        {items.map((p) => (
-          <div key={p.id} style={{ padding: 12, border: "1px solid #e5e7eb", borderRadius: 12 }}>
-            <div style={{ fontWeight: 800 }}>{p.name}</div>
-            <div style={{ opacity: 0.8 }}>
-                {p.address?.raw ||
-                    [p.address?.street, p.address?.building, p.address?.city?.name]
-                    .filter(Boolean)
-                    .join(", ")}
-            </div>
-            {p.phone && <div style={{ marginTop: 6 }}>{p.phone}</div>}
-            <button
-                style={{ marginTop: 10 }}
-                type="button"
-                onClick={() => {
-                    localStorage.setItem("selectedPharmacy", JSON.stringify({ id: p.id, name: p.name }));
-                    localStorage.setItem("selectedPharmacyId", p.id);
-                    window.dispatchEvent(new Event("storage"));
-                    navigate("/", { replace: true });
-                }}
+      {!loading && !err && (
+        <div className="pharmacies-grid">
+          {items.length === 0 ? (
+            <div className="pharmacies-state">No pharmacies found</div>
+          ) : (
+            items.map((p) => {
+              const address =
+                p.address?.raw ||
+                [p.address?.street, p.address?.building, p.address?.city?.name, p.address?.region?.name]
+                  .filter(Boolean)
+                  .join(", ");
+              const highlighted = highlightId && p.id === highlightId;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={`pharmacy-card ${highlighted ? "highlight" : ""}`}
+                  onClick={() => selectPharmacy(p)}
                 >
-                Select this pharmacy
-            </button>
-
-          </div>
-        ))}
-      </div>
+                  <div className="pharmacy-card__head">
+                    <div>
+                      <div className="pharmacy-card__title">{p.name}</div>
+                      {p.chain?.name ? <div className="pharmacy-card__chain">{p.chain.name}</div> : null}
+                    </div>
+                    <span className="pharmacy-card__cta">Open</span>
+                  </div>
+                  <div className="pharmacy-card__address">{address || "No address"}</div>
+                  {p.phone ? <div className="pharmacy-card__phone">{p.phone}</div> : null}
+                </button>
+              );
+            })
+          )}
+        </div>
+      )}
     </div>
   );
 }

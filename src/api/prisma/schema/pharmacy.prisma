@@ -17,9 +17,11 @@ model Pharmacy {
   id        String  @id @default(cuid())
   chainId   String?
   name      String
+  logoUrl   String?
   addressId String
   phone     String?
   email     String?
+  website   String?
   isActive  Boolean @default(true)
 
   confirmSlaMinutes Int?
@@ -48,6 +50,8 @@ model Pharmacy {
   ratingAvg             Decimal?              @default(0)
   ratingCount           Int                   @default(0)
   pharmacyReviewReplies PharmacyReviewReply[]
+
+  conversations PharmacyConversation[]
 
   @@index([chainId])
   @@index([addressId])

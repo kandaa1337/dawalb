@@ -1,63 +1,86 @@
 .footer {
   width: 100%;
-  padding: 28px 20px;  /* вместо 40px со всех сторон */
-  background: #f2f2f2;
-  color: #101010;
+  background: #efefef;
+  color: #202225;
+  border-top: 1px solid #ddd;
+  margin-top: 36px;
+}
+
+.footer__inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 30px 20px 24px;
+}
+
+.footer__warning {
   text-align: center;
+  font-size: clamp(24px, 3vw, 44px);
+  line-height: 1.2;
+  margin: 6px 0 28px;
+  color: #8a8f94;
+  font-weight: 700;
 }
 
-/* icons row */
-.footer-icons {
-  margin-top: 14px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.footer__features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 20px;
 }
 
-/* если используешь <i> (fontawesome/иконки) */
-.footer-icons i {
-  font-size: 20px;
-  cursor: pointer;
-
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  background: rgba(255, 255, 255, 0.10);
-  transition: transform 120ms ease, background 160ms ease, opacity 160ms ease;
+.footer__feature {
+  background: #f7f7f7;
+  border: 1px solid #e6e6e6;
+  border-radius: 14px;
+  padding: 16px;
 }
 
-.footer-icons i:hover {
-  background: rgba(255, 255, 255, 0.16);
-  transform: translateY(-1px);
-  opacity: 1;
+.footer__feature h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
 }
 
-.footer-icons i:active {
-  transform: translateY(0px) scale(0.98);
+.footer__feature p {
+  margin: 0;
+  line-height: 1.45;
+  color: #50545a;
 }
 
-/* доступность (если <i> кликабельные) */
-.footer-icons i:focus-visible {
-  outline: 3px solid rgba(255, 255, 255, 0.55);
-  outline-offset: 2px;
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding-top: 20px;
 }
 
-/* чуть компактнее на маленьких экранах */
-@media (max-width: 480px) {
-  .footer {
-    padding: 22px 16px;
+.footer__cols h4 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.footer__cols p {
+  margin: 0 0 8px;
+  color: #474b50;
+}
+
+.footer__copy {
+  text-align: center;
+  margin: 18px 0 0;
+  color: #6f757c;
+}
+
+@media (max-width: 980px) {
+  .footer__features {
+    grid-template-columns: 1fr;
   }
+  .footer__cols {
+    grid-template-columns: 1fr 1fr;
+  }
+}
 
-  .footer-icons i {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+@media (max-width: 640px) {
+  .footer__cols {
+    grid-template-columns: 1fr;
   }
 }

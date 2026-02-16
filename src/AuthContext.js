@@ -60,12 +60,16 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => {
     const isAdmin = computeIsAdmin(user);
+    const isSuperAdmin = user?.isSuperAdmin === true;
+    const isModerator = user?.isModerator === true;
 
     return {
       user,
       loading,
       isAuthed: !!user,
       isAdmin,
+      isSuperAdmin,
+      isModerator,
 
       reloadMe: loadMe,
 

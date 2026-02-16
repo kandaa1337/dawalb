@@ -1,0 +1,138 @@
+.pharmacies-page {
+  max-width: 1180px;
+  margin: 24px auto 40px;
+  padding: 0 16px;
+}
+
+.pharmacies-hero {
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 18px;
+  background: linear-gradient(140deg, #f4fff8 0%, #ebf8ff 100%);
+  border: 1px solid #dbeee2;
+}
+
+.pharmacies-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  color: #143824;
+}
+
+.pharmacies-subtitle {
+  margin: 8px 0 18px;
+  color: #58756a;
+}
+
+.pharmacies-search {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 12px;
+}
+
+.pharmacies-search input {
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid #cce0d4;
+  background: #fff;
+  padding: 0 14px;
+  font-size: 15px;
+  outline: none;
+}
+
+.pharmacies-search input:focus {
+  border-color: #3abf7a;
+  box-shadow: 0 0 0 4px rgba(58, 191, 122, 0.15);
+}
+
+.pharmacies-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.pharmacy-card {
+  border: 1px solid #e7efe9;
+  border-radius: 16px;
+  padding: 16px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.pharmacy-card:hover {
+  transform: translateY(-2px);
+  border-color: #bde2ca;
+  box-shadow: 0 14px 30px rgba(16, 56, 32, 0.08);
+}
+
+.pharmacy-card.highlight {
+  border-color: #39ba75;
+  box-shadow: 0 0 0 3px rgba(57, 186, 117, 0.18);
+}
+
+.pharmacy-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.pharmacy-card__title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #112b1f;
+}
+
+.pharmacy-card__chain {
+  font-size: 12px;
+  color: #6d7f74;
+  margin-top: 2px;
+}
+
+.pharmacy-card__cta {
+  background: #ebfff3;
+  border: 1px solid #bde2ca;
+  color: #1c8a4f;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pharmacy-card__address {
+  margin-top: 10px;
+  color: #41584d;
+  line-height: 1.45;
+}
+
+.pharmacy-card__phone {
+  margin-top: 8px;
+  color: #1f3e31;
+  font-weight: 600;
+}
+
+.pharmacies-state {
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #e7efe9;
+  background: #fff;
+  color: #4b5f55;
+}
+
+.pharmacies-state--error {
+  border-color: #f4b7b7;
+  background: #fff1f1;
+  color: #b91c1c;
+}
+
+@media (max-width: 900px) {
+  .pharmacies-search {
+    grid-template-columns: 1fr;
+  }
+
+  .pharmacies-grid {
+    grid-template-columns: 1fr;
+  }
+}

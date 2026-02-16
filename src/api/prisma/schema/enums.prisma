@@ -28,6 +28,7 @@ enum ReservationStatus {
 enum PaymentProvider {
   WHISH
   OMT
+  CREDIT_CARD
 }
 
 enum PaymentStatus {

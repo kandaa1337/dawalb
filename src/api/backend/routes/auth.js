@@ -80,6 +80,25 @@ authRouter.post("/login", async (req, res, next) => {
 
 authRouter.get("/me", requireAuth, (req, res) => {
   const u = req.user;
+  const adminRaw = process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || "";
+  const adminEmails = adminRaw
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  const superRaw =
+    process.env.SUPER_ADMIN_EMAILS || process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || "";
+  const superEmails = superRaw
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+
+  const roleCodes = (u.roles || []).map((r) => r?.role?.code).filter(Boolean);
+  const isAdminByRole = roleCodes.includes("ADMIN");
+  const isAdminByEmail = !!u.email && adminEmails.includes(u.email.toLowerCase());
+  const isSuperAdmin = !!u.email && superEmails.includes(u.email.toLowerCase());
+  const isAdmin = isAdminByEmail || isAdminByRole || isSuperAdmin;
+  const isModerator = roleCodes.includes("MODERATOR") || isAdmin;
+
   res.json({
     ok: true,
     user: {
@@ -87,7 +106,10 @@ authRouter.get("/me", requireAuth, (req, res) => {
       email: u.email,
       phone: u.phone,
       name: u.name,
-      roles: u.roles?.map((r) => r.role.code) || [],
+      roles: roleCodes,
+      isAdmin,
+      isSuperAdmin,
+      isModerator,
     },
   });
 });

@@ -13,7 +13,7 @@ export default function Header() {
   const { t, lang, setLang } = useI18n();
   const inputRef = useRef(null);
 
-  const examples = useMemo(() => ["Парацетамол", "Ибупрофен", "Витамин C"], []);
+  const examples = useMemo(() => [t("common.searchExample1"), t("common.searchExample2"), t("common.searchExample3")], [t]);
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -29,12 +29,10 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
 
     const handleKey = (e) => {
-      // "/" фокус в поиск (как на многих сайтах)
       if (e.key === "/" && document.activeElement?.tagName !== "INPUT") {
         e.preventDefault();
         inputRef.current?.focus();
       }
-      // Esc очищает
       if (e.key === "Escape" && document.activeElement === inputRef.current) {
         setQuery("");
         inputRef.current?.blur();
@@ -54,13 +52,13 @@ export default function Header() {
     e.preventDefault();
     const q = query.trim();
     if (!q) return;
-    navigate(`/products?query=${encodeURIComponent(q)}`);
+    navigate(`/search?q=${encodeURIComponent(q)}`);
   };
 
   const goExample = (text) => {
     setQuery(text);
     inputRef.current?.focus();
-    navigate(`/products?query=${encodeURIComponent(text)}`);
+    navigate(`/search?q=${encodeURIComponent(text)}`);
   };
 
   return (

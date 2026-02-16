@@ -95,11 +95,111 @@ async function ensureAdminUser() {
   return user;
 }
 
+const BASE_CATEGORIES = [
+  { slug: "vitamins-minerals", name: "Витамины и минералы", sortOrder: 1 },
+  { slug: "kids-moms", name: "Товары для детей и матерей", sortOrder: 2 },
+  { slug: "beauty-care", name: "Красота и уход", sortOrder: 3 },
+  { slug: "medicines-prevention", name: "Лекарства и профилактические средства", sortOrder: 4 },
+  { slug: "sport-health", name: "Спорт и здоровье", sortOrder: 5 },
+];
+
+const SUBCATEGORIES = {
+  "sport-health": [
+    { slug: "sport-protein-bars", name: "Протеиновые батончики" },
+    { slug: "sport-protein", name: "Протеин" },
+    { slug: "sport-fat-burners", name: "Жиросжигатели" },
+    { slug: "sport-amino-acids", name: "Аминокислоты" },
+    { slug: "sport-vitamins-sport", name: "Спортивные витамины" },
+  ],
+  "vitamins-minerals": [
+    { slug: "vitamins-multivitamin", name: "Поливитамины" },
+    { slug: "vitamins-vitamin-d", name: "Витамин D" },
+    { slug: "vitamins-vitamin-c", name: "Витамин C" },
+    { slug: "vitamins-minerals", name: "Минералы" },
+    { slug: "vitamins-omega", name: "Омега-3" },
+  ],
+  "kids-moms": [
+    { slug: "kids-baby-food", name: "Детское питание" },
+    { slug: "kids-hygiene", name: "Гигиена для детей" },
+    { slug: "kids-vitamins", name: "Витамины для детей" },
+    { slug: "kids-moms-care", name: "Уход для мам" },
+  ],
+  "beauty-care": [
+    { slug: "beauty-skincare", name: "Уход за кожей" },
+    { slug: "beauty-hair", name: "Волосы" },
+    { slug: "beauty-suncare", name: "Солнцезащита" },
+    { slug: "beauty-hygiene", name: "Гигиена" },
+  ],
+  "medicines-prevention": [
+    { slug: "meds-pain", name: "Обезболивающие" },
+    { slug: "meds-cold", name: "Простуда и грипп" },
+    { slug: "meds-digestion", name: "Пищеварение" },
+    { slug: "meds-allergy", name: "Аллергия" },
+    { slug: "meds-heart", name: "Сердце и сосуды" },
+  ],
+};
+
+async function ensureBaseCategories() {
+  const parentIds = {};
+  for (let i = 0; i < BASE_CATEGORIES.length; i++) {
+    const { slug, name, sortOrder } = BASE_CATEGORIES[i];
+    const cat = await prisma.category.upsert({
+      where: { slug },
+      update: { sortOrder, isActive: true, parentId: null },
+      create: { slug, isActive: true, sortOrder },
+    });
+    parentIds[slug] = cat.id;
+    await prisma.categoryTranslation.upsert({
+      where: { categoryId_locale: { categoryId: cat.id, locale: "EN" } },
+      update: { name },
+      create: { categoryId: cat.id, locale: "EN", name },
+    });
+  }
+  for (const [parentSlug, subs] of Object.entries(SUBCATEGORIES)) {
+    const parentId = parentIds[parentSlug];
+    if (!parentId) continue;
+    for (let j = 0; j < subs.length; j++) {
+      const { slug, name } = subs[j];
+      const sub = await prisma.category.upsert({
+        where: { slug },
+        update: { parentId, isActive: true, sortOrder: j },
+        create: { slug, parentId, isActive: true, sortOrder: j },
+      });
+      await prisma.categoryTranslation.upsert({
+        where: { categoryId_locale: { categoryId: sub.id, locale: "EN" } },
+        update: { name },
+        create: { categoryId: sub.id, locale: "EN", name },
+      });
+    }
+  }
+}
+
+async function ensurePaymentMethods() {
+  const methods = [
+    { code: "WHISH", name: "WHISH", isActive: true },
+    { code: "OMT", name: "OMT", isActive: true },
+    { code: "CREDIT_CARD", name: "Credit Card", isActive: true },
+  ];
+  for (const m of methods) {
+    await prisma.paymentMethod.upsert({
+      where: { code: m.code },
+      update: { name: m.name, isActive: m.isActive },
+      create: m,
+    });
+  }
+}
+
 async function main() {
   console.log("🌱 Seed started");
 
   await ensureRoles();
   console.log("✅ Roles ensured");
+
+  await ensurePaymentMethods();
+  console.log("✅ Payment methods ensured");
+
+  await ensureBaseCategories();
+  console.log("✅ Base categories ensured");
 
   const adminUser = await ensureAdminUser();
   console.log(`✅ Admin ensured: ${adminUser.email || adminUser.phone} (${adminUser.id})`);

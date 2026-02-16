@@ -43,6 +43,13 @@ model User {
   reviewReportsMade     PharmacyReviewReport[]      @relation("ReviewReporter")
   reviewReportsResolved PharmacyReviewReport[]      @relation("ReviewResolver")
   reviewHelpfulVotes    PharmacyReviewHelpfulVote[]
+
+  offersFrozen  Offer[] @relation("OfferFrozenBy")
+  offersDeleted Offer[] @relation("OfferDeletedBy")
+  notifications Notification[]
+
+  pharmacyConversationsAsUser PharmacyConversation[]         @relation("PharmacyConversationAsUser")
+  pharmacyConversationMessages PharmacyConversationMessage[] @relation("PharmacyConversationMessageSender")
 }
 
 model AuthAccount {
